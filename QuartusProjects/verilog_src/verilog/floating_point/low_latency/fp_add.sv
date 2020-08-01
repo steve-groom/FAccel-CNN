@@ -1,9 +1,46 @@
+// +FHDR------------------------------------------------------------------------
+// My detail and (C) notice
+// -----------------------------------------------------------------------------
+// FILE NAME : fp_add
+// DEPARTMENT :
+// AUTHOR : Steven Groom
+// AUTHOR’S EMAIL : steve@bems.se
+// -----------------------------------------------------------------------------
+// RELEASE HISTORY
+// VERSION DATE AUTHOR DESCRIPTION
+// 1.0 2020-07-31 Steven Groom
+// -----------------------------------------------------------------------------
+// KEYWORDS : 
+// -----------------------------------------------------------------------------
+// PURPOSE : a non-compliant floating point adder, no NaN's etc
+// designed to be small and fast for machine learning
 // [s] [eeeeee] [mmmmmmm] mantissa has implied leading 1 unless mantissa and exponent is zero.
+// -----------------------------------------------------------------------------
+// PARAMETERS
+// PARAM NAME RANGE : DESCRIPTION : DEFAULT : UNITS
+// e.g.DATA_WIDTH [32,16] : width of the data : 32 :
+// EXP [1-?] : width of exponent value : 8 :
+// MANT [1-?] : width of mantissa : 7
+// WIDTH [3-?] : width of float : 1(sign) + EXP + MANT
+// EXTRA_PIPELINE [0-2] : extra pipeline stages in adder : 2 : 1 is mid-pipe 2 is front-end and mid-pipe
+// -----------------------------------------------------------------------------
+// REUSE ISSUES
+// Reset Strategy : fully synchronous - clock_sreset
+// Clock Domains : one - clock
+// Critical Timing :
+// Test Features :
+// Asynchronous I/F :
+// Scan Methodology :
+// Instantiations :
+// Synthesizable (y/n) : y
+// Other :
+// -FHDR------------------------------------------------------------------------
+//
 module fp_add # (
             parameter           EXP = 8,
-            parameter           MANT = 7,
+            parameter           MANT = 23,
             parameter           WIDTH = EXP + MANT + 1,
-            parameter           EXTRA_PIPELINE = 2      // 1 is mid pipe, 2 = mid and front pipe
+            parameter           EXTRA_PIPELINE = 2
 )
 (
     input   logic               clock,

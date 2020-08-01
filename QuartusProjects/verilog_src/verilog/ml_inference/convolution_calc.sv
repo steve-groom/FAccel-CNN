@@ -36,7 +36,7 @@ module convolution_calc # (
             logic [WIDTH-1:0]   buffer[MAX_RES-1:0][KY-1:0];
             logic [WIDTHI-1:0][WIDTH-1:0] add_items;
             logic [WIDTH-1:0]   buffer_taps[RESOLUTIONS-1:0][KY-2:0];
-            logic [KX*KY-1:0]   mlt_valid;
+            logic               mlt_valid;
             
     // handle kernel stream
     always_ff @ (posedge clock) begin
@@ -61,7 +61,7 @@ module convolution_calc # (
 
     // generate buffer taps for X resolutions
     always_comb begin
-        for (yy=0; yy<KY-1; yy++) begin
+        for (yy=0; yy<(KY-1); yy++) begin
             for (t=0; t<RESOLUTIONS; t++) begin
                 if (t == 0) buffer_taps[t][yy] = buffer[XRES1-1][yy];
                 if (t == 1) buffer_taps[t][yy] = buffer[XRES2-1][yy];
@@ -97,12 +97,13 @@ module convolution_calc # (
         begin
             if (WIDTHI > (KX * KY)) begin
                 always_comb begin
-                    add_items[WIDTHI-1:(KX*KY)] = 1'b0;
+                    add_items[WIDTHI-1:(KX*KY)] = ZERO[WIDTH-1:0];
                 end
             end
             for (j=0; j<KY; j++) begin : my
                 for (i=0; i<KX; i++) begin : mx
-                    fp_mlt      # (
+                    if ((i == 0) && (j == 0))
+                        fp_mlt  # (
                                     .EXP(EXP),
                                     .MANT(MANT),
                                     .WIDTH(WIDTH)
@@ -113,7 +114,22 @@ module convolution_calc # (
                                     .data_valid(enable_calc),
                                     .dataa(kernel[KX-i-1][KY-j-1]),
                                     .datab(buffer[i][j]),
-                                    .result_valid(mlt_valid[i+(j*KX)]),
+                                    .result_valid(mlt_valid),
+                                    .result(add_items[i+(j*KX)])
+                                );
+                    else
+                        fp_mlt  # (
+                                    .EXP(EXP),
+                                    .MANT(MANT),
+                                    .WIDTH(WIDTH)
+                                )
+                                mlt (
+                                    .clock(clock),
+                                    .clock_sreset(clock_sreset),
+                                    .data_valid(enable_calc),
+                                    .dataa(kernel[KX-i-1][KY-j-1]),
+                                    .datab(buffer[i][j]),
+                                    .result_valid(),
                                     .result(add_items[i+(j*KX)])
                                 );
                 end
@@ -131,7 +147,7 @@ module convolution_calc # (
                                 adder_tree (
                                     .clock(clock),
                                     .clock_sreset(clock_sreset),
-                                    .data_valid(mlt_valid[0]),
+                                    .data_valid(mlt_valid),
                                     .data(add_items),
                                     .result_valid(result_valid),
                                     .result(result)

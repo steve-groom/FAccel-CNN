@@ -1,3 +1,41 @@
+// +FHDR------------------------------------------------------------------------
+// My detail and (C) notice
+// -----------------------------------------------------------------------------
+// FILE NAME : fp_add
+// DEPARTMENT :
+// AUTHOR : Steven Groom
+// AUTHOR’S EMAIL : steve@bems.se
+// -----------------------------------------------------------------------------
+// RELEASE HISTORY
+// VERSION DATE AUTHOR DESCRIPTION
+// 1.0 2020-07-31 Steven Groom
+// -----------------------------------------------------------------------------
+// KEYWORDS : 
+// -----------------------------------------------------------------------------
+// PURPOSE : a non-compliant floating point multiplier, no NaN's etc
+// designed to be small and fast for machine learning
+// [s] [eeeeee] [mmmmmmm] mantissa has implied leading 1 unless mantissa and exponent is zero.
+// -----------------------------------------------------------------------------
+// PARAMETERS
+// PARAM NAME RANGE : DESCRIPTION : DEFAULT : UNITS
+// e.g.DATA_WIDTH [32,16] : width of the data : 32 :
+// EXP [1-?] : width of exponent value : 8 :
+// MANT [1-?] : width of mantissa : 7
+// WIDTH [3-?] : width of float : 1(sign) + EXP + MANT
+// USE_HW_MULT [AUTO/NO/YES] : type of implementation : AUTO - not used for now
+// -----------------------------------------------------------------------------
+// REUSE ISSUES
+// Reset Strategy : fully synchronous - clock_sreset
+// Clock Domains : one - clock
+// Critical Timing :
+// Test Features :
+// Asynchronous I/F :
+// Scan Methodology :
+// Instantiations :
+// Synthesizable (y/n) : y
+// Other :
+// -FHDR------------------------------------------------------------------------
+//
 module fp_mlt # (
             parameter           EXP = 8,
             parameter           MANT = 7,
